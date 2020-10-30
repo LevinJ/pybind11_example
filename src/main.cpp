@@ -1,8 +1,19 @@
 #include <pybind11/pybind11.h>
+#include <iostream>
+
 
 int add(int i, int j) {
+	std::cout<<"add func is called !!"<<std::endl;
     return i + j;
 }
+struct Pet {
+    Pet(const std::string &name) : name(name) { }
+    void setName(const std::string &name_) { name = name_; }
+    const std::string &getName() const { return name; }
+
+    std::string name;
+};
+
 
 namespace py = pybind11;
 
@@ -37,4 +48,9 @@ PYBIND11_MODULE(example, m) {
 #else
     m.attr("__version__") = "dev";
 #endif
+
+    py::class_<Pet>(m, "Pet")
+           .def(py::init<const std::string &>())
+           .def("setName", &Pet::setName)
+           .def("getName", &Pet::getName);
 }

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4)
 project(example)
-
+add_definitions(-g)
 set(PYBIND11_PYTHON_VERSION  2.7)
 add_subdirectory(pybind11)
 pybind11_add_module(example src/main.cpp)
