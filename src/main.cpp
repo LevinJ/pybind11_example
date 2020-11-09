@@ -1,11 +1,21 @@
 #include <pybind11/pybind11.h>
 #include <iostream>
+#include "ekf.h"
 
+int add(int i, int j) ;
+//int add(int i, int j) {
+//	std::cout<<"add func is called !!"<<std::endl;
+//    return i + j;
+//}
 
-int add(int i, int j) {
-	std::cout<<"add func is called !!"<<std::endl;
-    return i + j;
-}
+//struct Pet {
+//    Pet(const std::string &name);
+//    void setName(const std::string &name_);
+//    const std::string &getName();
+//
+//    std::string name;
+//};
+
 struct Pet {
     Pet(const std::string &name) : name(name) { }
     void setName(const std::string &name_) { name = name_; }
@@ -53,4 +63,7 @@ PYBIND11_MODULE(example, m) {
            .def(py::init<const std::string &>())
            .def("setName", &Pet::setName)
            .def("getName", &Pet::getName);
+    py::class_<ekf>(m, "ekf")
+               .def(py::init<>())
+			   .def("process_measurement", &ekf::process_measurement);
 }
