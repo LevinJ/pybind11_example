@@ -4,6 +4,7 @@
 #include <pybind11/stl.h>
 //#include <functional>
 #include <pybind11/functional.h>
+#include "testimage.h"
 
 int add(int i, int j) ;
 //int add(int i, int j) {
@@ -94,6 +95,10 @@ PYBIND11_MODULE(example, m) {
            .def(py::init<const std::string &>())
            .def("setName", &Pet::setName)
            .def("getName", &Pet::getName);
+    py::class_<testimage>(m, "testimage")
+              .def(py::init<>())
+              .def("show_image", &testimage::show_image);
+
     py::class_<ekf>(m, "ekf")
                .def(py::init<>())
 			   .def("process_measurement", &ekf::process_measurement)

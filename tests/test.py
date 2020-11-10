@@ -4,7 +4,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../bin"))
 import example as m
 from example import Pet
 from example import ekf
-from example import VOMeasurement, WheelMeasurement, create_vomeasurement, create_wheelmeasurement, do_it, func_arg
+from example import VOMeasurement, WheelMeasurement, create_vomeasurement, create_wheelmeasurement, do_it, func_arg, testimage
+import cv2
 
 # assert m.__version__ == '0.0.1'
 # assert m.add(10, 20) == 30
@@ -27,6 +28,11 @@ from example import VOMeasurement, WheelMeasurement, create_vomeasurement, creat
 # do_it();
 #  
 # obj_meas = VOMeasurement(1.3, [4.5,6.7,88], 100)
+
+test = testimage()
+img = cv2.imread('/home/levin/raw_data/loop_image/52-1-1descriptor_match.jpg')
+test.show_image(img)
+
 obj_meas = create_vomeasurement(1.3, [4.5,6.7,88], 100)
 obj_meas_2 = create_wheelmeasurement(1.3, [4.5,6.7,88], 2)
 
