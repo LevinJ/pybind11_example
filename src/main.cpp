@@ -2,9 +2,12 @@
 #include <iostream>
 #include "ekf.h"
 #include <pybind11/stl.h>
-//#include <functional>
+#include <functional>
 #include <pybind11/functional.h>
 #include "testimage.h"
+//#include <eigen3/Eigen/Dense>
+//#include <eigen3/Eigen/Geometry>
+#include <pybind11/eigen.h>
 
 int add(int i, int j) ;
 //int add(int i, int j) {
@@ -19,6 +22,16 @@ int add(int i, int j) ;
 //
 //    std::string name;
 //};
+
+class ComClass{
+public:
+	std::string name;
+	Eigen::Vector3d P_;
+	Eigen::Vector3d V_;
+	Eigen::Matrix3d R_;
+	Eigen::Matrix3d ric_;
+	Eigen::Vector3d tic_;
+};
 
 std::vector<std::function<void(int)>>g_fs;
 //int func_arg(const std::function<int(int)> &f) {
@@ -37,6 +50,26 @@ void do_it(){
 	}
 
 }
+
+std::vector<std::function<void(ComClass)>>g_fs2;
+
+void register_comclasscb(std::function<void(ComClass)> f){
+	g_fs2.push_back(f);
+}
+
+void do_it2(){
+	for(auto & g_f : g_fs2){
+		ComClass obj;
+		obj.name = "this is fun";
+		obj.P_ = {1, 2, 3};
+		obj.V_ = {4, 5 ,6};
+		obj.ric_ << 10, 20, 30,40,50,60,70,80,90;
+		g_f(obj);
+	}
+
+}
+
+
 struct Pet {
     Pet(const std::string &name) : name(name) { }
     void setName(const std::string &name_) { name = name_; }
@@ -78,6 +111,8 @@ PYBIND11_MODULE(example, m) {
     m.def("create_wheelmeasurement", &create_wheelmeasurement);
     m.def("do_it", &do_it);
     m.def("func_arg", &func_arg);
+    m.def("register_comclasscb", &register_comclasscb);
+    m.def("do_it2", &do_it2);
 
     m.def("subtract", [](int i, int j) { return i - j; }, R"pbdoc(
         Subtract two numbers
@@ -91,10 +126,17 @@ PYBIND11_MODULE(example, m) {
     m.attr("__version__") = "dev";
 #endif
 
+    py::class_<ComClass>(m, "ComClass")
+           .def(py::init<>())
+		   .def_readwrite("name", &ComClass::name)
+		   .def_readwrite("P_", &ComClass::P_)
+		   .def_readwrite("V_", &ComClass::V_)
+		   .def_readwrite("ric_", &ComClass::ric_);
+
     py::class_<Pet>(m, "Pet")
-           .def(py::init<const std::string &>())
-           .def("setName", &Pet::setName)
-           .def("getName", &Pet::getName);
+               .def(py::init<const std::string &>())
+               .def("setName", &Pet::setName)
+               .def("getName", &Pet::getName);
     py::class_<testimage>(m, "testimage")
               .def(py::init<>())
               .def("show_image", &testimage::show_image);
