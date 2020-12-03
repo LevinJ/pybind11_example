@@ -70,6 +70,45 @@ void do_it2(){
 }
 
 
+class VOStates{
+public:
+	void update_states(ComClass & obj){
+		if(f1){
+			f1(obj);
+		}
+
+	}
+	void update_states2(ComClass & obj){
+		if(f2){
+			f2(obj);
+		}
+	}
+	std::function<void(ComClass & obj)> f1;
+	std::function<void(ComClass & obj)> f2;
+};
+
+std::shared_ptr<VOStates> create_callbacks(std::function<void(ComClass & obj)> f1, std::function<void(ComClass & obj)> f2){
+	auto res = std::make_shared<VOStates>();
+	if(f1){
+		res->f1 = f1;
+	}
+	if(f2){
+		res->f2 = f2;
+	}
+	return res;
+}
+
+void do_callbacks(std::shared_ptr<VOStates> vo){
+	ComClass obj;
+	obj.name = "this is fun";
+	obj.P_ = {1, 2, 3};
+	obj.V_ = {4, 5 ,6};
+	obj.ric_ << 10, 20, 30,40,50,60,70,80,90;
+
+	vo->update_states(obj);
+	vo->update_states2(obj);
+}
+
 struct Pet {
     Pet(const std::string &name) : name(name) { }
     void setName(const std::string &name_) { name = name_; }
@@ -113,6 +152,11 @@ PYBIND11_MODULE(example, m) {
     m.def("func_arg", &func_arg);
     m.def("register_comclasscb", &register_comclasscb);
     m.def("do_it2", &do_it2);
+    m.def("create_callbacks", &create_callbacks);
+    m.def("do_callbacks", &do_callbacks);
+
+    py::class_<VOStates, std::shared_ptr<VOStates>>(m, "VOStates")
+               .def(py::init<>());
 
     m.def("subtract", [](int i, int j) { return i - j; }, R"pbdoc(
         Subtract two numbers

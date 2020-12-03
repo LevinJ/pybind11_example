@@ -5,6 +5,7 @@ import example as m
 from example import Pet
 from example import ekf
 from example import VOMeasurement, WheelMeasurement, create_vomeasurement, create_wheelmeasurement, do_it, func_arg, testimage, register_comclasscb, do_it2
+from example import create_callbacks, do_callbacks
 import cv2
 
 # assert m.__version__ == '0.0.1'
@@ -30,9 +31,12 @@ import cv2
 def cb(val):
     print(val)
     return
+res = create_callbacks(cb, None)
+do_callbacks(res)
+# register_comclasscb(cb)
+# do_it2()
 
-register_comclasscb(cb)
-do_it2()
+
 #  
 # obj_meas = VOMeasurement(1.3, [4.5,6.7,88], 100)
 
