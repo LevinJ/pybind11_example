@@ -8,6 +8,7 @@
 //#include <eigen3/Eigen/Dense>
 //#include <eigen3/Eigen/Geometry>
 #include <pybind11/eigen.h>
+#include "opencv_bind11.h"
 
 int add(int i, int j) ;
 //int add(int i, int j) {
@@ -31,6 +32,7 @@ public:
 	Eigen::Matrix3d R_;
 	Eigen::Matrix3d ric_;
 	Eigen::Vector3d tic_;
+	cv::Mat img1_;
 };
 
 std::vector<std::function<void(int)>>g_fs;
@@ -64,6 +66,7 @@ void do_it2(){
 		obj.P_ = {1, 2, 3};
 		obj.V_ = {4, 5 ,6};
 		obj.ric_ << 10, 20, 30,40,50,60,70,80,90;
+		obj.img1_ = cv::imread("/home/levin/raw_data/loop_image/0-262-3pnp_match.jpg");
 		g_f(obj);
 	}
 
@@ -104,6 +107,7 @@ void do_callbacks(std::shared_ptr<VOStates> vo){
 	obj.P_ = {1, 2, 3};
 	obj.V_ = {4, 5 ,6};
 	obj.ric_ << 10, 20, 30,40,50,60,70,80,90;
+	obj.img1_ = cv::imread("/home/levin/raw_data/loop_image/0-262-3pnp_match.jpg");
 
 	vo->update_states(obj);
 	vo->update_states2(obj);
@@ -124,6 +128,12 @@ std::shared_ptr<VOMeasurement> create_vomeasurement(float timestamp, const std::
 std::shared_ptr<WheelMeasurement> create_wheelmeasurement(float timestamp, const std::vector<float> &data, int seq){
 	return std::make_shared<WheelMeasurement>(timestamp, data, seq);
 }
+
+//! 点相加
+cv::Point addpt(cv::Point& lhs, cv::Point&rhs){
+    return cv::Point(lhs.x + rhs.x, lhs.y + rhs.y);
+}
+
 
 namespace py = pybind11;
 
@@ -146,6 +156,7 @@ PYBIND11_MODULE(example, m) {
 
         Some other explanation about the add function.
     )pbdoc");
+    m.def("addpt", &addpt, "add two point");
     m.def("create_vomeasurement", &create_vomeasurement);
     m.def("create_wheelmeasurement", &create_wheelmeasurement);
     m.def("do_it", &do_it);
@@ -175,6 +186,7 @@ PYBIND11_MODULE(example, m) {
 		   .def_readwrite("name", &ComClass::name)
 		   .def_readwrite("P_", &ComClass::P_)
 		   .def_readwrite("V_", &ComClass::V_)
+		   .def_readwrite("img1_", &ComClass::img1_)
 		   .def_readwrite("ric_", &ComClass::ric_);
 
     py::class_<Pet>(m, "Pet")

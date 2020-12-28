@@ -6,7 +6,11 @@ from example import Pet
 from example import ekf
 from example import VOMeasurement, WheelMeasurement, create_vomeasurement, create_wheelmeasurement, do_it, func_arg, testimage, register_comclasscb, do_it2
 from example import create_callbacks, do_callbacks
+
+from example import addpt
 import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 
 # assert m.__version__ == '0.0.1'
 # assert m.add(10, 20) == 30
@@ -29,12 +33,22 @@ import cv2
 # do_it();
 
 def cb(val):
+    P1 = np.arange(10)
+    P2 = val.P_.copy()
+#     val.P_[0] = 100
+    plt.imshow(val.img1_)
+    plt.show()
     print(val)
     return
-res = create_callbacks(cb, None)
-do_callbacks(res)
-# register_comclasscb(cb)
-# do_it2()
+# res = create_callbacks(cb, None)
+# do_callbacks(res)
+register_comclasscb(cb)
+do_it2()
+
+# a = (1,2)
+# b = (3,-1)
+# c = addpt(a, b)
+# print("{} + {} = {}".format(a, b, c))
 
 
 #  
